@@ -9,20 +9,19 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class GraphSAINT(nn.Module):
     def __init__(self, num_classes, arch_gcn, train_params, feat_full, label_full, cpu_eval=False):
         """
-        Build the multi-layer GNN architecture.  构建多层GNN框架
-
+        Build the multi-layer GNN architecture. 
         Inputs:
-            num_classes         int, number of classes a node can belong to   一个节点可以属于的类的数目
-            arch_gcn            dict, config for each GNN layer    配置每个GNN层
-            train_params        dict, training hyperparameters (e.g., learning rate)训练参数
+            num_classes         int, number of classes a node can belong to  
+            arch_gcn            dict, config for each GNN layer    
+            train_params        dict, training hyperparameters (e.g., learning rate)
             feat_full           np array of shape N x f, where N is the total num of
                                 nodes and f is the dimension for input node feature
-                                形状为N x f的np数组，其中N为节点，f为输入节点特征的维数
+                                
             label_full          np array, for single-class classification, the shape
                                 is N x 1 and for multi-class classification, the
                                 shape is N x c (where c = num_classes)
-                                用于单类分类，形状是nx1和多类分类，shape是N x c(其中c = num_classes)
-            cpu_eval            bool, if True, will put the model on CPU. 如果为True，将把模型放在CPU上。
+                                
+            cpu_eval            bool, if True, will put the model on CPU. 
 
         Outputs:
             None
@@ -34,7 +33,7 @@ class GraphSAINT(nn.Module):
         if "attention" in arch_gcn:
             if "gated_attention" in arch_gcn:
                 if arch_gcn['gated_attention']:
-                    self.aggregator_cls = layers.GatedAttentionAggregator   ##层聚合器
+                    self.aggregator_cls = layers.GatedAttentionAggregator   
                     self.mulhead = int(arch_gcn['attention'])
             else:
                 self.aggregator_cls = layers.AttentionAggregator
@@ -83,7 +82,7 @@ class GraphSAINT(nn.Module):
         """
         Set the feature dimension / weight dimension for each GNN or MLP layer.
         We will use the dimensions set here to initialize PyTorch layers.
-        设置每个GNN或MLP层的特征尺寸/权重尺寸。我们将使用这里设置的尺寸来初始化PyTorch层。
+        
 
         Inputs:
             dims        list, length of node feature for each hidden layer
@@ -102,9 +101,7 @@ class GraphSAINT(nn.Module):
         Set the index of GNN layers for the full neural net. For example, if
         the full NN is having 1-0-1-0 arch (1-hop graph conv, followed by 0-hop
         MLP, ...). Then the layer indices will be 0, 2.
-        为整个神经网络设置GNN层索引。例如,如果完整的NN有1-0-1-0拱门
-        （1跳图convv，然后是0跳图延时,. .）
-        然后层索引将是0,2
+        
         """
         idx_conv = np.where(np.array(self.order_layer) >= 1)[0]
         idx_conv = list(idx_conv[1:] - 1)
@@ -116,7 +113,7 @@ class GraphSAINT(nn.Module):
             self.idx_conv = list(np.where(np.array(self.order_layer) == 1)[0])
 
 
-    def forward(self, node_subgraph, adj_subgraph):   ##向前传播
+    def forward(self, node_subgraph, adj_subgraph):   
         feat_subg = self.feat_full[node_subgraph]
         label_subg = self.label_full[node_subgraph]
         label_subg_converted = label_subg if self.sigmoid_loss else self.label_full_cat[node_subgraph]
@@ -127,13 +124,13 @@ class GraphSAINT(nn.Module):
         
 
 
-        return pred_subg, label_subg, label_subg_converted    ####预测子图    标签子图  标签子图转换
+        return pred_subg, label_subg, label_subg_converted   
         
 
     def _loss(self, preds, labels, norm_loss):
         """
         The predictor performs sigmoid (for multi-class) or softmax (for single-class)：
-        预测执行sigmoid(用于多类)或softmax(用于单类)
+
         """
         if self.sigmoid_loss:
             norm_loss = norm_loss.unsqueeze(1)
@@ -146,7 +143,7 @@ class GraphSAINT(nn.Module):
     def get_aggregators(self):
         """
         Return a list of aggregator instances. to be used in self.build()
-        返回聚合器实例列表。在self.build()中使用
+
         """
         num_param = 0
         aggregators = []
@@ -173,7 +170,7 @@ class GraphSAINT(nn.Module):
     def train_step(self, node_subgraph, adj_subgraph, norm_loss_subgraph):
         """
         Forward and backward propagation
-        前向传播和反向传播
+
         """
         self.train()
         self.optimizer.zero_grad()          
@@ -188,7 +185,7 @@ class GraphSAINT(nn.Module):
     def eval_step(self, node_subgraph, adj_subgraph, norm_loss_subgraph):
         """
         Forward propagation only
-        只进行前向传播
+
         """
         self.eval()
         with torch.no_grad():     

@@ -12,25 +12,22 @@ NOTE
     non-IID nature of GNN samplers (whether it is graph-sampling or layer sampling based),
     we may need some modification to the standard batch-norm layer operations to achieve
     optimal accuracy on graphs.
-    对于各种GNN层，我们可选地支持批处理规范化。然而，由于GNN采样器的非iid特性(无论是基于图采样还是基于层采样)，
-    我们可能需要对标准批norm层操作进行一些修改，以实现对图的最佳精度
+
 
     The study of optimal GNN-based batch-norm is out-of-scope for the current version of
     GraphSAINT. So as a compromise, we provide multiple implementations of batch-norm
     layer which can be optionally inserted at the output of the GNN layers.
-    基于最优gnn的批norm的研究超出了当前版本的GraphSAINT的范围。为此，我们提供了批量规范层的多种实现，
-    可以在GNN层的输出端随意插入批量规范层。
+
 
 Specifically, we have the various choices for the <bias> field in the layer classes
-******  特别地，我们在层类中为<偏置>字段提供了各种选择
+
     'bias'          means no batch-norm is applied. Only add the bias to the hidden
                     features of the GNN layer.
-                    意味着不应用批标准。只在GNN层的隐藏特征中添加偏差
+
     'norm'          means we calculate the mean and variance of the GNN hidden features,
                     and then scale the hidden features manually by the mean and variance.
                     In this case, we need explicitly create the 'offset' and 'scale' params.
-                    首先计算GNN隐特征的均值和方差，然后通过均值和方差对隐特征进行手工缩放。
-                    在这种情况下，我们需要显式地创建'offset'和'scale'参数
+
     'norm-nn'       means we use the torch.nn.BatchNorm1d layer implemented by torch.
                     In this case, no need to explicitly maintain the BN internal params.
 """
@@ -116,12 +113,12 @@ class HighOrderAggregator(nn.Module):
     def forward(self, inputs):
         """
         Inputs:.
-            adj_norm        normalized adj matrix of the subgraph   ##子图的归一化矩阵
-            feat_in         2D matrix of input node features     ###输入节点特征的二维矩阵
+            adj_norm        normalized adj matrix of the subgraph  
+            feat_in         2D matrix of input node features    
 
         Outputs:
-            adj_norm        same as input (to facilitate nn.Sequential)   与输入相同(以方便nn. sequential)
-            feat_out        2D matrix of output node features    输出节点特征的二维矩阵
+            adj_norm        same as input (to facilitate nn.Sequential)   
+            feat_out        2D matrix of output node features    
         """
         adj_norm, feat_in = inputs
         feat_in = self.f_dropout(feat_in)

@@ -41,29 +41,29 @@ class GraphSampler:
     def __init__(self, adj_train, node_train, size_subgraph, args_preproc):
         """
         Inputs:
-            adj_train       scipy sparse CSR matrix of the training graph      稀疏CSR矩阵的训练图  
-            node_train      1D np array storing the indices of the training nodes     存储训练节点索引的一维np数组
-            size_subgraph   int, the (estimated) number of nodes in the subgraph      估计的子图中的节点数量
-            args_preproc    dict, addition arguments needed for pre-processing        预处理所需的添加参数
+            adj_train       scipy sparse CSR matrix of the training graph       
+            node_train      1D np array storing the indices of the training nodes     
+            size_subgraph   int, the (estimated) number of nodes in the subgraph      
+            args_preproc    dict, addition arguments needed for pre-processing        
             
         Outputs:
             None
         """
         self.adj_train = adj_train
-        self.node_train = np.unique(node_train).astype(np.int32)   ##对于一维数组或者列表，unique函数去除其中重复的元素，并按元素由大到小返回一个新的无元素重复的元组或者列表
-        # size in terms of number of vertices in subgraph     用子图中的顶点数表示大小
-        self.size_subgraph = size_subgraph  ###子图中的节点数（估计）
+        self.node_train = np.unique(node_train).astype(np.int32)   
+        # size in terms of number of vertices in subgraph     
+        self.size_subgraph = size_subgraph  
         self.name_sampler = 'None'
         self.node_subgraph = None
-        self.preproc(**args_preproc)    ###args_preproc ####添加预处理所需的参数
+        self.preproc(**args_preproc)    
 
-    def preproc(self, **kwargs):   ###预处理   **kwargs表示关键字参数，它是一个dict
+    def preproc(self, **kwargs):  
         pass
 
-    def par_sample(self, stage, **kwargs):   ####并行采样
-        return self.cy_sampler.par_sample()     ###得到文件
+    def par_sample(self, stage, **kwargs):   
+        return self.cy_sampler.par_sample()     
 
-    def _helper_extract_subgraph(self, node_ids):   ####辅助——选择——子图
+    def _helper_extract_subgraph(self, node_ids):   
         """
         ONLY used for serial Python sampler (NOT for the parallel cython sampler).
         Return adj of node-induced subgraph and other corresponding data struct.
@@ -76,45 +76,45 @@ class GraphSampler:
             indices         np array, indices of the subg adj CSR
             data            np array, data of the subg adj CSR. Since we have aggregator
                             normalization, we can simply set all data values to be 1
-                            因为我们有聚合器规范化，所以我们可以简单地将所有数据值设置为1
+                         
             subg_nodes      np array, i-th element stores the node ID of the original graph
                             for the i-th node in the subgraph. Used to index the full feats
                             and label matrices.
-                            第i个元素存储子图中第i个节点的原始图的节点ID    用来索引完整的特征和标签矩阵。
+                            
             subg_edge_index np array, i-th element stores the edge ID of the original graph
                             for the i-th edge in the subgraph. Used to index the full array
                             of aggregation normalization.
-                            第i个元素存储子图中第i条边的原始图的边ID。用于索引聚合规范化的完整数组
+                            
         """
-        node_ids = np.unique(node_ids)   ##对于一维数组或者列表，unique函数去除其中重复的元素，并按元素由大到小返回一个新的无元素重复的元组或者列表
-        node_ids.sort()   ### 函数用于对原列表进行排序，如果指定参数，则使用比较函数指定的比较函数。
-        orig2subg = {n: i for i, n in enumerate(node_ids)}####   n为第一列    enumerate(node_ids)为第二列的数据
-        n = node_ids.size   ###size 用来计算数组和矩阵中所有元素的个数
-        indptr = np.zeros(node_ids.size + 1)   ###全零矩阵
+        node_ids = np.unique(node_ids) 
+        node_ids.sort()   
+        orig2subg = {n: i for i, n in enumerate(node_ids)}
+        n = node_ids.size   
+        indptr = np.zeros(node_ids.size + 1)   
         indices = []
         subg_edge_index = []
         subg_nodes = node_ids
         for nid in node_ids:
             idx_s, idx_e = self.adj_train.indptr[nid], self.adj_train.indptr[nid + 1]
-            neighs = self.adj_train.indices[idx_s : idx_e]    ##邻居   
+            neighs = self.adj_train.indices[idx_s : idx_e]    
             for i_n, n in enumerate(neighs):
                 if n in orig2subg:
                     indices.append(orig2subg[n])
                     indptr[orig2subg[nid] + 1] += 1
                     subg_edge_index.append(idx_s + i_n)
-        indptr = indptr.cumsum().astype(np.int64) ##cumsum（） 指定输出类型，或者按行累加或者按列累加
+        indptr = indptr.cumsum().astype(np.int64) 
         indices = np.array(indices)
         subg_edge_index = np.array(subg_edge_index)
         data = np.ones(indices.size)
-        assert indptr[-1] == indices.size == subg_edge_index.size   ####断言函数就是针对某一行代码进行测试，得到输出结果，用来判断代码是否成功运行
+        assert indptr[-1] == indices.size == subg_edge_index.size   
         return indptr, indices, data, subg_nodes, subg_edge_index
 
 
 # --------------------------------------------------------------------
-# [BELOW] python wrapper for parallel samplers implemented with Cython 用于用Cython实现的并行采样器的python包装器
+# [BELOW] python wrapper for parallel samplers implemented with Cython 
 # --------------------------------------------------------------------
 
-class rw_sampling(GraphSampler):##随机游走采样
+class rw_sampling(GraphSampler):
     """
     The sampler performs unbiased random walk, by following the steps:
      1. Randomly pick `size_root` number of root nodes from all training nodes;
@@ -153,29 +153,28 @@ class rw_sampling(GraphSampler):##随机游走采样
         pass
 
 
-class edge_sampling(GraphSampler):##边采样
+class edge_sampling(GraphSampler):
     def __init__(self,adj_train,node_train,num_edges_subgraph):
         """
         The sampler picks edges from the training graph independently, following
         a pre-computed edge probability distribution. i.e.,
-        ******预先计算的边缘概率分布后，采样器从训练图中独立地选取边。
+       
             p_{u,v} \\propto 1 / deg_u + 1 / deg_v
         Such prob. dist. is derived to minimize the variance of the minibatch
         estimator (see Thm 3.2 of the GraphSAINT paper).   
-        ******根据最优边概率公式实现最小方差  从而选取边  
+        
         """
         self.num_edges_subgraph = num_edges_subgraph
         # num subgraph nodes may not be num_edges_subgraph * 2 in many cases,
         # but it is not too important to have an accurate estimation of subgraph size. 
         # So it's probably just fine to use this number.
-        # Num子图节点在很多情况下可能不是num_edges_subgraph * 2，
-        # 但是精确估计子图的大小并不是很重要。所以用这个数就可以了
+
         
-        self.size_subgraph = num_edges_subgraph * 2   #####子图节点     估计节点值
-        self.deg_train = np.array(adj_train.sum(1)).flatten()   ###最优采样概率
-        self.adj_train_norm = scipy.sparse.dia_matrix((1 / self.deg_train, 0), shape=adj_train.shape).dot(adj_train)###归一化
-        super().__init__(adj_train, node_train, self.size_subgraph, {})    ###调用父类（超类）的一个方法 是用来解决多重继承的问题，直接使用类名调用 157
-        self.cy_sampler = cy.Edge2(             ###使用cython 采样模块进行     
+        self.size_subgraph = num_edges_subgraph * 2  
+        self.deg_train = np.array(adj_train.sum(1)).flatten()   
+        self.adj_train_norm = scipy.sparse.dia_matrix((1 / self.deg_train, 0), shape=adj_train.shape).dot(adj_train)
+        super().__init__(adj_train, node_train, self.size_subgraph, {})    
+        self.cy_sampler = cy.Edge2(              
             self.adj_train.indptr,
             self.adj_train.indices,
             self.node_train,
@@ -187,10 +186,10 @@ class edge_sampling(GraphSampler):##边采样
             self.num_edges_subgraph,
         )
 
-    def preproc(self,**kwargs):####预处理
+    def preproc(self,**kwargs):
         """
         Compute the edge probability distribution p_{u,v}.
-        计算边概率分布p
+      
         """
         self.edge_prob = scipy.sparse.csr_matrix(
             (
@@ -202,10 +201,10 @@ class edge_sampling(GraphSampler):##边采样
         )
         self.edge_prob.data[:] = self.adj_train_norm.data[:]
         _adj_trans = scipy.sparse.csr_matrix.tocsc(self.adj_train_norm)
-        self.edge_prob.data += _adj_trans.data      # P_e \propto a_{u,v} + a_{v,u}  公式
+        self.edge_prob.data += _adj_trans.data      # P_e \propto a_{u,v} + a_{v,u}  
         self.edge_prob.data *= 2 * self.num_edges_subgraph / self.edge_prob.data.sum()
         # now edge_prob is a symmetric matrix, we only keep the upper triangle part, since adj is assumed to be undirected. 
-        # 现在edge_probb是一个对称矩阵，我们只保留上面的三角形部分，因为adj被假定为无向的
+
         self.edge_prob_tri = scipy.sparse.triu(self.edge_prob).astype(np.float32)  # NOTE: in coo format
 
 
@@ -262,7 +261,7 @@ class mrw_sampling(GraphSampler):##多维的随机游走采样
         )
 
 
-class node_sampling(GraphSampler):###节点采样
+class node_sampling(GraphSampler):
     """
     Independently pick some nodes from the full training graph, based on
     pre-computed node probability distribution. The prob. dist. follows
@@ -312,13 +311,12 @@ class node_sampling(GraphSampler):###节点采样
         self.p_dist = self.p_dist.astype(np.int32)
 
 
-class full_batch_sampling(GraphSampler):             #######test代码使用
+class full_batch_sampling(GraphSampler):            
     """
     Strictly speaking, this is not a sampler. It simply returns the full adj
     matrix of the training graph. This can serve as a baseline to compare
     full-batch vs. minibatch performance.
-    严格来说，这不是采样器。 它只是返回训练图的完整的adj矩阵。
-    这可以作为比较全批处理和小批处理性能的基线。  
+  
 
     Therefore, the size_subgraph argument is not used here. 所以没有使用子图size的这个参数
     """
@@ -334,17 +332,17 @@ class full_batch_sampling(GraphSampler):             #######test代码使用
 
 
 # --------------------------------------------
-# [BELOW] Example sampler based on pure python   基于纯python的示例采样器
+# [BELOW] Example sampler based on pure python  
 # --------------------------------------------
 
 class NodeSamplingVanillaPython(GraphSampler):
     """
     This class is just to showcase how you can write the graph sampler in pure python.
-    这个类只是为了展示如何用纯python编写图形采样器。
+
 
     The simplest and most basic sampler: just pick nodes uniformly at random and return the
     node-induced subgraph.  
-    最简单和最基本的采样器:只需均匀随机地选取节点，并返回节点诱导子图。
+
     """
     def __init__(self, adj_train, node_train, size_subgraph):
         super().__init__(adj_train, node_train, size_subgraph, {})

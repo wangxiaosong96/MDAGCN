@@ -134,8 +134,8 @@ class GraphSAINT(nn.Module):
             norm_loss = norm_loss.unsqueeze(1)
             #print('norm_loss',norm_loss)
             return torch.nn.BCEWithLogitsLoss(weight=norm_loss,reduction='sum',pos_weight = self.positive_weight)(preds, labels) #
-           # '''函数没问题 主要是后面的（pred，labels）的输出值两个格式不一样，导致报错！！！需要对pred和label进行更改维度   '''  
-          #return torch.nn.NLLLoss(weight=norm_loss,reduction='sum',pos_weight = self.positive_weight)(preds, labels)
+            
+          
         
         else:
             _ls = torch.nn.CrossEntropyLoss(reduction='none')(preds, labels)
