@@ -37,4 +37,8 @@ MDAGCN: predicting mutation-drug associations through signed graph convolutional
 · cython==0.29.2  
 · pandas==1.1.5  
 
+## Contact
+
+Please feel free to contact us if you need any help: xiaosongwang@ahau.edu.cn
+
 
