@@ -29,7 +29,7 @@ MDAGCN: predicting mutation-drug associations through signed graph convolutional
 4. Train and test, for example:
    python -m graphsaint.pytorch_version.train_saveys --data_prefix drug_mutation_data/task_Tp__testlabel0_7knn_edge_fold0  --train_config graphsaint/parameters_epoch_1.yml
 
-## Experiment
+## Comparative experiments
 machine learning file: includes code for decision trees (DTs), random forests (RF), and extremely random trees (ERTs).
 
 state-of-the-art methods file: includes code for gcmc, SGCN, SNEA, TDRC, SGNNMD and NMCMDA.
