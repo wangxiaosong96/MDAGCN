@@ -1,0 +1,1 @@
+python -m graphsaint.pytorch_version.train_nobalance_weight_saveys --data_prefix drug_mutation_data/datatask_Tp__nobalance__testlabel0_3knn_edge_fold0 --train_config graphsaint/parameters_epoch_1.yml1
