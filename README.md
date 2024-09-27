@@ -19,8 +19,8 @@ MDAGCN: predicting mutation-drug associations through signed graph convolutional
 · D_SM.txt：drug-similarity matrix, which is calculated based on drug features.  
 · M_SM.txt：mutation-similarity matrix, which is calculated based on mutation features.  
 · drug_mutation_pairs.csv: the drug-mutation association network.  
-· all mutation feature 661x248.csv：mutation feature matrix
-· all_drug_feature_184x231.csv：drug feature matrix
+· all mutation feature 661x248.csv: mutation feature matrix.
+· all_drug_feature_184x231.csv: drug feature matrix.
 
 
 
