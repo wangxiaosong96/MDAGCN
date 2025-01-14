@@ -53,17 +53,8 @@ state-of-the-art methods file: includes code for gcmc, SGCN, SNEA, TDRC, SGNNMD 
 In addition, the code for these comparison experiments is executable, ensuring the transparency of the experiments.
 
 
-## Requirements
-
-· MDAGCN is implemented to work under Python 3.7.0  
-· torch==1.7.1  
-· numpy==1.19.2  
-· scipy==1.5.4  
-· cython==0.29.2  
-· pandas==1.1.5  
-
 ## Contact
 
-Please feel free to contact us if you need any help: xiaosongwang@ahau.edu.cn
+Please feel free to contact us if you need any help: xiaosongwang@stu.ahau.edu.cn
 
 
