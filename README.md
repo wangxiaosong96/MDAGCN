@@ -26,7 +26,7 @@ MDAGCN: predicting mutation-drug associations through signed graph convolutional
 
 
 ## Run the MDAGCN
-1. pip install -r MDAGCN_requirements.txt
+1. conda env create -f environment.yml
 
 ***notes: When a required library cannot be downloaded automatically, it is advisable to download and install it manually.
 
