@@ -1,0 +1,68 @@
+dataTp__testlabel0_knn_edge_train_test_index_all
+
+1  conda activate GCNFTG
+2  cd Desktop\GCNFTG CODE
+
+
+
+
+
+python -m graphsaint.pytorch_version.train_nobalance_weight_saveys --data_prefix miRNA_disease_data/task_Tm__nobalance__testlabel0_15knn_edge_fold2 --train_config ./train_config/table2/ppi2_e_weight10_lr0.01.yml > ./miRNA_disease__case_study/20200118_Tm_unbalanced_15knn_lr0.01_weight10_fold2.out --gpu 0
+
+
+  
+
+
+
+python -m graphsaint.pytorch_version.train_nobalance_weight_saveys --data_prefix miRNA_disease_data/datatask_Td__testlabel0_knn5neighbors_edge__fold0
+
+
+
+
+python -m graphsaint.pytorch_version.train_nobalance_weight_saveys --data_prefix miRNA_disease_data/datatask_Td__testlabel0_knn5neighbors_edge__fold0 --train_config code/parameters.yml > ./code/miRNA_diasease_data__case_study/20200828_Td_balance_5knn_lr0.01_weight10_fold.out --gpu 0
+、
+
+python -m graphsaint.pytorch_version.train_nobalance_weight_saveys --data_prefix miRNA_disease_data/datatask_Td__testlabel0_knn5neighbors_edge__fold0 --train_config graphsaint/parameters.yml > ./miRNA_diasease__case_study/20200828_Td_balance_5knn_lr0.01_weight10_fold.out --gpu 0
+
+
+python -m graphsaint.pytorch_version.train_nobalance_weight_saveys --data_prefix miRNA_disease_data/datatask_Td__testlabel0_knn5neighbors_edge__fold0 --train_config graphsaint/parameters.yml
+
+训练平衡数据命令行
+python -m graphsaint.pytorch_version.train_saveys --data_prefix miRNA_disease_data/datatask_Td__testlabel0_knn10neighbors_edge__fold0 --train_config graphsaint/parameters.yml > ./miRNA_diasease_data__case_study/20200831_Tp_balance_10knn_lr0.01_fold.out --gpu 0
+
+
+命令行输入前 先输出git init
+
+
+
+命令行指令   终端显示最终结果 
+ python -m graphsaint.pytorch_version.train_saveys --data_prefix miRNA_disease_data/datatask_Td__testlabel0_knn10neighbors_edge__fold0 --train_config graphsaint/parameters_epoch_1.yml
+ python -m graphsaint.pytorch_version.train_saveys --data_prefix miRNA_disease_data/datatask_Tp__testlabel0_knn10neighbors_edge__fold0 --train_config graphsaint/parameters_epoch_1.yml
+
+
+原数据
+地址
+cd Desktop\MDA-GCNFTG-main\code\MDA-GKNN
+
+python -m pytorch_version.train_saveys --data_prefix miRNA_disease_data/datatask_Td__testlabel0_knn10neighbors_edge__fold0 --train_config graphsaint/parameters_epoch_1.yml
+sys.path.append('C:\Users\Administrator\Desktop\MDA-GCNFTG-main\code\MDA-GKNN')
+
+type1  平衡数据
+
+python -m graphsaint.pytorch_version.train_saveys --data_prefix miRNA_disease_data/task_Tp__testlabel0_3knn_edge_fold0  --train_config graphsaint/parameters_epoch_1.yml
+
+
+python -m graphsaint.pytorch_version.train_saveys --data_prefix miRNA_disease_data/task_Tp__testlabel0_5knn_edge_fold0  --train_config graphsaint/parameters_epoch_1.yml
+
+python -m graphsaint.pytorch_version.train_saveys --data_prefix miRNA_disease_data/task_Tp__testlabel0_7knn_edge_fold0  --train_config graphsaint/parameters_epoch_1.yml
+
+python -m graphsaint.pytorch_version.train_saveys --data_prefix miRNA_disease_data/task_Tp__testlabel0_10knn_edge_fold0  --train_config graphsaint/parameters_epoch_1.yml
+
+python -m graphsaint.pytorch_version.train_saveys --data_prefix miRNA_disease_data/task_Tp__testlabel0_15knn_edge_fold0  --train_config graphsaint/parameters_epoch_1.yml
+
+type不平衡数据
+
+
+python -m graphsaint.pytorch_version.train_saveys --data_prefix miRNA_disease_data/task_Tp__nobalance__testlabel0_3knn_edge_fold0  --train_config graphsaint/parameters_epoch_1.yml
+
+python -m graphsaint.pytorch_version.train_nobalance_weight_saveys --data_prefix miRNA_disease_data/task_Tp__nobalance__testlabel0_3knn_edge_fold0  --train_config graphsaint/parameters_epoch_1.yml
