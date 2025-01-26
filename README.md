@@ -30,7 +30,10 @@ MDAGCN: predicting mutation-drug associations through signed graph convolutional
 
 Download Required Dependencies
 Use the following command to create a virtual environment and install dependencies via Conda:
+
+pip install -r requirements.txt
 conda env create -f environment.yml
+
 Alternatively, you can manually install the required libraries based on the code.
 
 ### Step 2: Data Pre-Processing
